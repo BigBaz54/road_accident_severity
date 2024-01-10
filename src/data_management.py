@@ -49,6 +49,26 @@ def process_data(df):
     df.drop(['an_nais'], axis=1, inplace=True)
     return df
 
+def select_features(df, features):
+    """
+    Return a dataframe with only the selected features
+    :param df: a pandas dataframe
+    :param features: a list of features
+    :return: a pandas dataframe
+    """
+    return df[features]
+
+def remove_missing_values(df):
+    """
+    Remove rows with missing values
+    :param df: a pandas dataframe
+    :return: a pandas dataframe
+    """
+    values_to_remove = ['nan', '', -1, '.']
+    for col in df.columns:
+        df = df[~df[col].isin(values_to_remove)]
+    return df
+
 
 if __name__ == "__main__":
     caracteristiques = load_raw_data('data/caracteristiques-2022.csv')
@@ -63,3 +83,11 @@ if __name__ == "__main__":
     print(len(df['id_usager'].unique()))
 
     print(df.head(30))
+
+    df = select_features(df, ['place', 'grav'])
+
+    print(df.head(30))
+
+    df = remove_missing_values(df)
+
+    print(len(df))
