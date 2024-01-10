@@ -7,7 +7,7 @@ def load_raw_data(path):
     :param path: path to the csv file
     :return: a pandas dataframe
     """
-    return pd.read_csv(path, sep=';')
+    return pd.read_csv(path, sep=';', low_memory=False)
 
 def joined_data(caracteristiques, lieux, usagers, vehicules):
     """
