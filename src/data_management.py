@@ -19,13 +19,13 @@ def joined_data(caracteristiques, lieux, usagers, vehicules):
     :return: a pandas dataframe
     """
     # Rename column 'Accident_Id' to 'Num_Acc' in caracteristiques
-    caracteristiques.rename(columns={'Accident_Id': 'Num_Acc'}, inplace=True)
+    car = caracteristiques.rename(columns={'Accident_Id': 'Num_Acc'}, inplace=False)
     
     # Merge the 4 datasets
-    vehicules.drop(['Num_Acc'], axis=1, inplace=True)
-    df = usagers.merge(vehicules, on='id_vehicule')
+    veh = vehicules.drop(['Num_Acc'], axis=1, inplace=False)
+    df = usagers.merge(veh, on='id_vehicule')
     df = df.merge(lieux, on='Num_Acc')
-    df = df.merge(caracteristiques, on='Num_Acc')
+    df = df.merge(car, on='Num_Acc')
     return df
 
 def process_data(df):
@@ -37,6 +37,7 @@ def process_data(df):
     :param df: a pandas dataframe
     :return: a pandas dataframe
     """
+    df = df.copy()
     df['age'] = 2022 - df['an_nais']
     # Replace 'nan' values by -1
     df['age'].fillna(-1, inplace=True)
@@ -47,6 +48,7 @@ def process_data(df):
     df['secu'] += df['secu3'].apply(lambda x: 0 if x == 0 or x == -1 else 1)
 
     df.drop(['an_nais'], axis=1, inplace=True)
+
     return df
 
 def select_features(df, features):
@@ -56,7 +58,7 @@ def select_features(df, features):
     :param features: a list of features
     :return: a pandas dataframe
     """
-    return df[features]
+    return df[features].copy()
 
 def remove_missing_values(df):
     """
@@ -65,8 +67,12 @@ def remove_missing_values(df):
     :return: a pandas dataframe
     """
     values_to_remove = ['nan', '', -1, '.']
+
+    df = df.copy()
+
     for col in df.columns:
         df = df[~df[col].isin(values_to_remove)]
+    
     return df
 
 
