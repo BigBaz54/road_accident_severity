@@ -1,4 +1,5 @@
 import pandas as pd
+from sklearn.decomposition import PCA
 
 
 def load_raw_data(path):
@@ -117,6 +118,33 @@ def data_available(df, feature):
     """
     return 100 * (1 - df[feature].isin([float('nan'), '', -1, '.', 0]).sum() / len(df))
 
+def workable_data():
+    """
+    Return a dataset containing the 27 features selected in the corresponding notebook and the 5 PCA components
+    :return: a pandas dataframe
+    """
+    caracteristiques = load_raw_data('data/caracteristiques-2022.csv')
+    lieux = load_raw_data('data/lieux-2022.csv')
+    usagers = load_raw_data('data/usagers-2022.csv')
+    vehicules = load_raw_data('data/vehicules-2022.csv')
+
+    df = joined_data(caracteristiques, lieux, usagers, vehicules)
+    df = process_data(df)
+
+    selected_features = ['place', 'catu', 'grav', 'sexe', 'trajet', 'senc', 'catv', 'obscar', 'choc', 'manv','motor', 'catr', 'circ', 'vosp','prof',  'plan', 'surf', 'infra','situ', 'vma',  'lum', 'agg','int', 'atm', 'col', 'age', 'secu']
+    df = select_features(df, selected_features)
+
+    df = remove_missing_values(df)
+
+    data_without_grav = df.drop(['grav'], axis=1, inplace=False)
+    grav = df['grav']
+    data_PCA = df.drop(['grav'], axis=1, inplace=False)
+    data_PCA = PCA(n_components=5).fit_transform(data_PCA)
+
+    data_PCA = pd.DataFrame(data_PCA, columns=['PC1', 'PC2', 'PC3', 'PC4', 'PC5'])
+    
+    return data_without_grav, grav, data_PCA
+
 
 if __name__ == "__main__":
     caracteristiques = load_raw_data('data/caracteristiques-2022.csv')
@@ -139,3 +167,5 @@ if __name__ == "__main__":
     df = remove_missing_values(df)
 
     print(len(df))
+
+    print(workable_data()[2].columns)
