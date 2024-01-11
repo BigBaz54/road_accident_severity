@@ -87,7 +87,7 @@ def process_data(df):
 
 def select_features(df, features):
     """
-    Return a dataframe with only the selected features
+    Filter the dataframe to keep only the selected features
     :param df: a pandas dataframe
     :param features: a list of features
     :return: a pandas dataframe
@@ -120,7 +120,7 @@ def data_available(df, feature):
 
 def workable_data(nb_pca=5):
     """
-    Return a dataset containing the 27 features selected in the corresponding notebook and the 5 PCA components
+    Return 3 dataframes containing the 26 features selected in the corresponding notebook, the 'grav' feature and the 5 PCA components
     :return: a pandas dataframe
     """
     caracteristiques = load_raw_data('data/caracteristiques-2022.csv')
