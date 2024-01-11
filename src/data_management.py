@@ -145,6 +145,21 @@ def workable_data(nb_pca=5):
     
     return data_without_grav, grav, data_PCA
 
+def to_one_hot(df, features):
+    """
+    Transform categorical features into one hot encoded features
+    :param df: a pandas dataframe
+    :param features: a list of features
+    :return: a pandas dataframe
+    """
+    df = df.copy()
+
+    for feature in features:
+        df = pd.concat([df, pd.get_dummies(df[feature], prefix=feature)], axis=1)
+        df.drop([feature], axis=1, inplace=True)
+    
+    return df
+
 
 if __name__ == "__main__":
     caracteristiques = load_raw_data('data/caracteristiques-2022.csv')
@@ -169,3 +184,5 @@ if __name__ == "__main__":
     print(len(df))
 
     print(workable_data()[2].columns)
+
+    print(to_one_hot(df, ['place','grav']).head(30))
