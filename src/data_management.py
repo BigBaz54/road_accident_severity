@@ -118,7 +118,7 @@ def data_available(df, feature):
     """
     return 100 * (1 - df[feature].isin([float('nan'), '', -1, '.', 0]).sum() / len(df))
 
-def workable_data():
+def workable_data(nb_pca=5):
     """
     Return a dataset containing the 27 features selected in the corresponding notebook and the 5 PCA components
     :return: a pandas dataframe
@@ -139,9 +139,9 @@ def workable_data():
     data_without_grav = df.drop(['grav'], axis=1, inplace=False)
     grav = df['grav']
     data_PCA = df.drop(['grav'], axis=1, inplace=False)
-    data_PCA = PCA(n_components=5).fit_transform(data_PCA)
+    data_PCA = PCA(n_components=nb_pca).fit_transform(data_PCA)
 
-    data_PCA = pd.DataFrame(data_PCA, columns=['PC1', 'PC2', 'PC3', 'PC4', 'PC5'])
+    data_PCA = pd.DataFrame(data_PCA, columns= ['PC' + str(i) for i in range(nb_pca)])
     
     return data_without_grav, grav, data_PCA
 
