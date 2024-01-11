@@ -33,7 +33,7 @@ def plot_time(time_df):
 
     # Set padding inside the box
     max_time = time_df['time'].max()
-    ax.set(xlim=(0, max_time + 0.15 * max_time))
+    ax.set(xlim=(0, max_time + 0.18 * max_time))
 
     for bars in ax.containers:
         ax.bar_label(bars, fmt=' %.3f')
