@@ -55,7 +55,7 @@ def process_data(df):
     df['actp'] = df['actp'].apply(lambda x: 10 if x == 'A' else -1 if (x == 'B' or x == '-1' or x == ' -1') else int(x))
 
     # Replace the one '#ERREUR' value in 'plan' by -1
-    df['nbv'] = df['nbv'].apply(lambda x: -1 if (x == '#ERREUR' or x == ' -1') else x)
+    df['nbv'] = df['nbv'].apply(lambda x: -1 if (x == '#ERREUR' or x == ' -1') else int(x))
 
     # Add 1 to 'infra' to have 'no infrastructure' counting as an actual information
     df['infra'] += 1
@@ -64,7 +64,7 @@ def process_data(df):
     df['choc'] += 1
 
     # Add 1 to 'nbv'
-    df['nbv'].apply(lambda x: -1 if x == ' -1' else int(x) + 1 if int(x) > 0 else int(x))
+    df['nbv'] += 1
 
     # Add 1 to 'vosp'
     df['vosp'] += 1
@@ -120,7 +120,7 @@ def data_available(df, feature):
 
 def workable_data(nb_pca=5):
     """
-    Return 3 dataframes containing the 26 features selected in the corresponding notebook, the 'grav' feature and the 5 PCA components
+    Return 3 dataframes containing the 27 features selected in the corresponding notebook, the 'grav' feature and the 5 PCA components
     :return: a pandas dataframe
     """
     caracteristiques = load_raw_data('data/caracteristiques-2022.csv')
@@ -131,7 +131,7 @@ def workable_data(nb_pca=5):
     df = joined_data(caracteristiques, lieux, usagers, vehicules)
     df = process_data(df)
 
-    selected_features = ['place', 'catu', 'grav', 'sexe', 'senc', 'catv', 'obscar', 'choc', 'manv','motor', 'catr', 'circ', 'vosp','prof',  'plan', 'surf', 'infra','situ', 'vma',  'lum', 'agg','int', 'atm', 'col', 'age', 'secu']
+    selected_features = ['place', 'catu', 'grav', 'sexe', 'senc', 'catv', 'obscar', 'choc', 'manv','motor', 'catr', 'circ', 'vosp', 'nbv', 'prof',  'plan', 'surf', 'infra','situ', 'vma',  'lum', 'agg','int', 'atm', 'col', 'age', 'secu']
     df = select_features(df, selected_features)
 
     df = remove_missing_values(df)
