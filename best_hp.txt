@@ -1,0 +1,52 @@
+Classifier: RandomForestClassifier
+Best parameters:
+	criterion   : gini
+	max_depth   : None
+	max_features: sqrt
+	min_samples_leaf: 5
+	min_samples_split: 10
+	n_estimators: 50
+Best score: 0.610
+
+############################################
+
+Classifier: LogisticRegression
+Best parameters:
+	C           : 0.1
+	max_iter    : 100
+	penalty     : l1
+	solver      : saga
+Best score: 0.557
+
+############################################
+
+Classifier: GaussianNB
+Best parameters:
+	var_smoothing: 0.02
+Best score: 0.517
+
+############################################
+
+Classifier: KNeighborsClassifier
+Best parameters:
+	algorithm   : ball_tree
+	leaf_size   : 10
+	n_neighbors : 10
+	p           : 1
+	weights     : distance
+Best score: 0.535
+
+############################################
+
+Classifier: MLPClassifier
+Best parameters:
+	activation  : logistic
+	alpha       : 0.001
+	hidden_layer_sizes: (100,)
+	learning_rate: constant
+	max_iter    : 500
+	solver      : sgd
+Best score: 0.578
+
+############################################
+

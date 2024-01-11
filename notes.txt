@@ -1,0 +1,93 @@
+en cas de fuite, il peut manquer des données
+
+s'assurer qu'il n'y ait pas de doublons dans les données
+autant de lignes que d'usagers
+
+essayer de retirer des features pour voir si le score diminue beaucoup, si le temps de calcul diminue beaucoup et si le
+nombre de lignes augmente beaucoup
+
+
+****************
+*** Démarche ***
+****************
+
+1) Analyse des données
+55 features 
+On retire les IDs
+On retire les features de date et de localisation car elles sont difficilement utilisables et que les informations importantes
+dont déjà contenues dans d'autres variables sur l'état de la route et la luminosité
+
+On constate que les features 'obs' et 'obsm' sont presque complémentaires et dispo à 16% et 80% :
+on en fait donc une seule feature qui contient toutes les informations et qui est plus facilement interprétable :
+    - 1 si aucun obstacle
+    - une numérotation commune pour les obstacles fixes et mouvants
+    - priorité à 'obsm' s'il y a les deux (très rare)
+
+Les features 'secu1', 'secu2' et 'secu3' étant censées être interprétées ensemble, on les fusionne en une seule feature
+qui contient le nombre de dispositifs de sécurité utilisés par l'usager. (Une autre approche serait de créer une feature par
+dispositif.)
+
+Afin d'avoir une sémantique commune à travers tous les attributs :
+    - on remplace les lettres par des nombres dans les variables catégorielles
+    - on ajoute 1 à 'infra', 'choc', 'nbv' et 'vosp' pour différencier les valeurs manquantes des valeurs renseignées mais 
+        qui explicitent que l'attribut ne s'applique (par exemple : 'nbv' = 0 signifie qu'il n'y a pas de voie de circulation,
+        mais contient bien une information, on lui ajoute donc 1 pour différencier des valeurs manquantes qui sont représentées par
+        0 ou -1)
+        
+On remplace 'an_nais' par 'age' qui est plus facilement interprétable et qui permet de mieux représenter les valeurs extrêmes
+
+On constate que 'occutc' qui ne concerne que les transports en commun est très peu renseigné (1.4%) donc on la retire
+
+On constate que 'lartpc' et 'larrout' sont dispo à 0.05% et 6.5% donc on les retire
+
+On décide de comparer avec et sans 'trajet' qui est rempli à un peu plus de 3/4
+
+Données sur les piétons très peu présentes mais en réalité présentes dans tous les cas où il y a un usager piéton
+
+-> En retirant les features présentant des valeurs manquantes, on passe de 127k lignes à 75k lignes (98k sans trajet)
+Pas d'outlier évident (quasi que des variables catégorielles)
+
+Graphes :
+On voit bien les corrélation évidentes sur la matrice de corrélation (ex : 'secu' et 'catu')
+On fait une PCA pour réduire la taille des données et ainsi le temps de calcul (car très rapide et fonctionnait bien (t-SNE super long))
+Silhouette score : -0.02 (max = 1, min = -1 : les clusters se chevauchent mais ça aurait pu être pire)
+Les features mises en avant par la PCA font sens
+On aurait pu aussi (notamment pour améliorer l'interprétabilité), utiliser une sélection de features par importance
+avec un modèle de type XGBoost. Cela pourrait mener à une perte d'info mais rendrait le modèle plus simple (moins de features)
+
+2) Séparation des données
+StratifiedKFold pour avoir des folds avec la même proportion de classes que dans le dataset initial
+
+3) Entrainement des modèles
+* PCA
+Etonnant : la PCA augmente le temps de train de certains modèles (ex : RandomForestClassifier)
+
+* One-hot
+L'encodage one-hot augmente beaucoup le temps de train des modèles et améliore un peu les performances des modèles
+qui bénéficient du fait qu'il n'y ait plus d'ordre entre les catégories
+En revanche, GaussianNB ne fonctionne pas du tout pour une raison simple : le modèle part du principe que les features sont
+indépendantes, ce qui n'est pas le cas avec l'encodage one-hot (c'est même le contraire)
+
+4) Recherche d'HP
+On utilise GridSearchCV pour trouver les meilleurs HP pour chaque modèle 
+(pas de random search car pas le temps pour de trop grandes ranges)
+
+5) Performance des modèles
+On choisit les métriques suivantes :
+    - accuracy : pour avoir une idée globale de la performance du modèle
+    - precision
+    - recall
+    - f1-score macro : pour prendre en compte les classes déséquilibrées
+
+******************************
+
+Autres approches :
+
+On pourrait faire une modèle pour les piétons (afin d'utiliser les variables qui ne concernent que les piétons),
+et 1 ou plusieurs modèles pour les voitures (ex : un modèle pour les voitures seules, un modèles pour les voitures qui
+sont entrées en collisions avec d'autres voitures en mouvement, etc.) afin d'y intégrer les spécificités des obstacles
+rencontrés et les caractéristiques des autres véhicules impliqués (sens de circulation relatif, type de véhicule, etc.)
+
+Combinaison de modèles (évidemment) mais c'était pas trop l'idée ici
+
+Exploration d'HP plus large avec RandomSearch (mais pas le temps)
