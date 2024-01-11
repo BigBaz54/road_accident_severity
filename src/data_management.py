@@ -131,7 +131,7 @@ def workable_data(nb_pca=5):
     df = joined_data(caracteristiques, lieux, usagers, vehicules)
     df = process_data(df)
 
-    selected_features = ['place', 'catu', 'grav', 'sexe', 'trajet', 'senc', 'catv', 'obscar', 'choc', 'manv','motor', 'catr', 'circ', 'vosp','prof',  'plan', 'surf', 'infra','situ', 'vma',  'lum', 'agg','int', 'atm', 'col', 'age', 'secu']
+    selected_features = ['place', 'catu', 'grav', 'sexe', 'senc', 'catv', 'obscar', 'choc', 'manv','motor', 'catr', 'circ', 'vosp','prof',  'plan', 'surf', 'infra','situ', 'vma',  'lum', 'agg','int', 'atm', 'col', 'age', 'secu']
     df = select_features(df, selected_features)
 
     df = remove_missing_values(df)
